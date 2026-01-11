@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Interviewer Dashboard</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <h2>Interviewer Dashboard</h2>
+            <div>Interviewer id: <strong th:text="${interviewerId}"></strong></div>
+        </div>
+        <p th:if="${message}" class="muted">Message: <span th:text="${message}"></span></p>
+
+        <h3>Set one availability</h3>
+        <form th:action="@{'/ui/interviewer/' + ${interviewerId} + '/availability'}" method="post">
+            <div class="form-field"><label>Day of week (1=Mon..7=Sun)</label><input type="number" name="dayOfWeek" min="1" max="7" value="1" required/></div>
+            <div class="form-field"><label>Start time</label><input type="time" name="startTime" value="09:00" required/></div>
+            <div class="form-field"><label>End time</label><input type="time" name="endTime" value="17:00" required/></div>
+            <div class="form-field"><label>Slot duration minutes</label><input type="number" name="slotDurationMinutes" value="30" min="15"/></div>
+            <div class="form-actions"><button class="btn primary" type="submit">Save availability</button>
+                <a href="/" class="btn-link">Public slots</a></div>
+        </form>
+
+        <section class="card" style="margin-top:18px">
+            <h3>Your availability windows</h3>
+            <div th:if="${#lists.isEmpty(availabilities)}" class="muted">No availability set.</div>
+            <div>
+                <div th:each="a : ${availabilities}" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:10px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,0.01),transparent);">
+                    <div>
+                        <div style="font-weight:700" th:text="'Day ' + ${a.dayOfWeek} + ' — ' + ${#temporals.format(a.startTime,'HH:mm')} + '–' + ${#temporals.format(a.endTime,'HH:mm')}"></div>
+                        <div class="slot-meta">Duration: <span th:text="${a.slotDurationMinutes}"></span> mins</div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <form th:action="@{'/ui/interviewer/' + ${interviewerId} + '/availability/' + ${a.id} + '/update'}" method="post" style="display:flex;gap:6px;align-items:center">
+                            <div style="display:flex;gap:6px;align-items:center">
+                                <input type="number" name="dayOfWeek" min="1" max="7" th:value="${a.dayOfWeek}" style="width:64px;padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)" />
+                                <input type="time" name="startTime" th:value="${#temporals.format(a.startTime,'HH:mm')}" style="padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)" />
+                                <input type="time" name="endTime" th:value="${#temporals.format(a.endTime,'HH:mm')}" style="padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)" />
+                                <input type="number" name="slotDurationMinutes" min="1" th:value="${a.slotDurationMinutes}" style="width:80px;padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)" />
+                            </div>
+                            <button class="btn small outline" type="submit">Save</button>
+                        </form>
+                        <form th:action="@{'/ui/interviewer/' + ${interviewerId} + '/availability/' + ${a.id} + '/delete'}" method="post">
+                            <button class="btn small outline" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <h3 style="margin-top:18px">Generate slots</h3>
+        <form th:action="@{'/ui/interviewer/' + ${interviewerId} + '/generate'}" method="post">
+            <div class="form-field"><label>Start date (optional)</label><input type="date" name="startDate"/></div>
+            <div class="form-field"><label>End date (optional)</label><input type="date" name="endDate"/></div>
+            <div class="muted"></div>
+            <div class="form-field" style="margin-top:8px"><label>Days ahead (leave empty for default)</label><input type="number" name="days" min="1"/></div>
+            <div class="form-actions"><button class="btn primary" type="submit">Generate slots</button></div>
+        </form>
+
+            <section class="card" style="margin-top:18px">
+                <h3>Your upcoming slots (next 30 days)</h3>
+                <div th:if="${slots} == null" class="muted">No slots available.</div>
+                <div class="slots-list">
+                    <div th:each="s : ${slots}" class="slot">
+                        <div class="slot-info">
+                            <div class="slot-time" th:text="${#temporals.format(s.startTs, 'yyyy-MM-dd HH:mm')} + ' — ' + ${#temporals.format(s.endTs, 'HH:mm')}"></div>
+                            <div class="slot-meta">cap: <span th:text="${s.capacity}"></span> — <span th:text="${s.status}"></span></div>
+                        </div>
+                        <div style="display:flex;gap:8px">
+                            <form th:action="@{'/ui/interviewer/' + ${interviewerId} + '/slot/' + ${s.id} + '/cancel'}" method="post" style="display:inline">
+                                <button class="btn small outline" type="submit">Cancel</button>
+                            </form>
+                            <form th:action="@{'/ui/interviewer/' + ${interviewerId} + '/slot/' + ${s.id} + '/delete'}" method="post" style="display:inline">
+                                <button class="btn small outline" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <section class="card" style="margin-top:18px">
+            <h3>Bookings</h3>
+            <div th:if="${#lists.isEmpty(bookings)}" class="muted">No bookings yet.</div>
+            <div th:each="bv : ${bookings}" style="margin-top:10px;padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(255,255,255,0.01),transparent);display:flex;justify-content:space-between;align-items:center">
+                <div>
+                    <div style="font-weight:700">Booking ID: <span th:text="${bv.booking.id}"></span></div>
+                    <div class="slot-meta">Student: <span th:text="${bv.candidate != null ? bv.candidate.name : '—'}"></span> — <span th:text="${bv.candidate != null ? bv.candidate.email : ''}"></span></div>
+                </div>
+                <div>
+                    <div th:text="'Booked at: ' + ${#temporals.format((bv.booking).bookedAt, 'yyyy-MM-dd HH:mm')}"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Interview Scheduler</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="container nav">
+        <div class="brand">Interview Scheduler</div>
+        <nav>
+            <a href="/ui/signup/student" class="btn-link">Student Sign up</a>
+            <a href="/ui/signup/interviewer" class="btn-link">Interviewer Sign up</a>
+            <a href="/ui/login" class="btn primary">Login</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <section class="card search-card">
+        <h2>Search Available Slots</h2>
+        <div class="row">
+            <label>From <input type="datetime-local" id="from" /></label>
+            <label>To <input type="datetime-local" id="to" /></label>
+            <button id="search" class="btn primary">Search</button>
+        </div>
+        <div id="message" class="muted"></div>
+    </section>
+
+    <section class="card slots-card">
+        <h3>Open Slots</h3>
+        <div id="slots" class="slots-list"></div>
+        <div class="actions"><button id="loadMore" class="btn outline" style="display:none;">Load more</button></div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container">Developed by Tanisha♥ — Simple interview scheduling Platform</div>
+</footer>
+
+<script>
+    let cursor = null;
+    let debounceTimer;
+    document.getElementById('search').addEventListener('click', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => loadSlots(true), 250);
+    });
+    document.getElementById('loadMore').addEventListener('click', () => loadSlots(false));
+
+    function loadSlots(reset) {
+        const from = document.getElementById('from').value;
+        const to = document.getElementById('to').value;
+        if (!from || !to) {
+            showMessage('Please select both from and to dates', true);
+            return;
+        }
+        if (reset) cursor = null;
+        const fromISO = new Date(from).toISOString();
+        const toISO = new Date(to).toISOString();
+        fetch(`/api/v1/slots?from=${encodeURIComponent(fromISO)}&to=${encodeURIComponent(toISO)}&limit=10${cursor ? '&cursor=' + cursor : ''}`)
+            .then(r => {
+                if (!r.ok) throw new Error('API request failed with status ' + r.status);
+                return r.json();
+            })
+            .then(data => {
+                if (reset) document.getElementById('slots').innerHTML = '';
+                if (data && data.items && Array.isArray(data.items)) {
+                    data.items.forEach(s => appendSlot(s));
+                    cursor = data.nextCursor;
+                    document.getElementById('loadMore').style.display = data.hasNext ? 'inline-block' : 'none';
+                } else {
+                    showMessage('No slots found', false);
+                    document.getElementById('loadMore').style.display = 'none';
+                }
+            }).catch(err => showMessage(err.toString(), true));
+    }
+
+    function appendSlot(s) {
+        const container = document.getElementById('slots');
+        const gid = 'interviewer-' + s.interviewerId;
+        let group = document.getElementById(gid);
+        if (!group) {
+            group = document.createElement('div');
+            group.className = 'interviewer-group';
+            group.id = gid;
+            const header = document.createElement('h4');
+            header.innerText = 'Interviewer ' + s.interviewerId;
+            group.appendChild(header);
+            const list = document.createElement('div');
+            list.className = 'interviewer-slots';
+            group.appendChild(list);
+            container.appendChild(group);
+        }
+        const listDiv = group.querySelector('.interviewer-slots');
+        const div = document.createElement('div');
+        div.className = 'slot';
+        div.innerHTML = `<div class="slot-info"><div class="slot-time">${new Date(s.startTs).toLocaleString()} — ${new Date(s.endTs).toLocaleString()}</div><div class="slot-meta">cap: ${s.capacity}</div></div>`;
+        const btn = document.createElement('button');
+        btn.className = 'btn primary small';
+        btn.innerText = 'Book';
+        btn.onclick = () => book(s.id);
+        div.appendChild(btn);
+        listDiv.appendChild(div);
+    }
+
+    function book(slotId) {
+        const candidateId = prompt("Enter candidateId:");
+        if (!candidateId) return;
+        fetch(`/api/v1/bookings/slot/${slotId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({candidateId: Number(candidateId)})
+        }).then(r => r.json()).then(data => showMessage('Booked: ' + JSON.stringify(data)))
+            .catch(err => showMessage(err.toString(), true));
+    }
+
+    function showMessage(msg, isError) {
+        const el = document.getElementById('message');
+        el.className = isError ? 'muted error' : 'muted success';
+        el.innerText = msg;
+    }
+</script>
+</body>
+</html>
+

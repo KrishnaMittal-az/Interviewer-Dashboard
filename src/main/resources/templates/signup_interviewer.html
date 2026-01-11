@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Interviewer Signup</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div class="container auth-wrap">
+    <div class="auth-card">
+        <h1>Interviewer Signup</h1>
+        <form action="/ui/signup/interviewer" method="post">
+            <div class="form-field"><label>Name</label><input type="text" name="name" required /></div>
+            <div class="form-field"><label>Weekly capacity</label><input type="number" name="weeklyCapacity" value="5" min="1" required /></div>
+            <div class="form-actions">
+                <button class="btn primary" type="submit">Create Interviewer</button>
+                <a href="/" class="btn-link">Back</a>
+            </div>
+        </form>
+        <p class="muted">After creating, you'll be taken to your dashboard where you can set availability and generate slots.</p>
+    </div>
+</div>
+</body>
+</html>

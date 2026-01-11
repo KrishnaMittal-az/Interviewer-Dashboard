@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2>Student Dashboard</h2>
+        <div>Student id: <strong th:text="${candidateId}"></strong></div>
+    </div>
+    <section style="margin-bottom:12px">
+        <form th:action="@{/ui/student/dashboard}" method="get" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="form-field"><label>Start date</label><input type="date" name="startDate" th:value="${startDate}" /></div>
+            <div class="form-field"><label>End date</label><input type="date" name="endDate" th:value="${endDate}" /></div>
+            <div class="form-actions"><button class="btn primary small" type="submit">Filter</button>
+                <a href="/ui/student/dashboard" class="btn-link">Clear</a></div>
+        </form>
+    </section>
+    <p th:if="${message}" class="muted">Message: <span th:text="${message}"></span></p>
+    <p th:if="${error}" class="muted error">Error: <span th:text="${error}"></span></p>
+
+    <section class="card">
+        <h3>Open slots (next 7 days)</h3>
+        <div th:if="${slots} == null" class="muted">No slots available.</div>
+        <div class="slots-list">
+            <div th:each="s : ${slots}" class="slot">
+                <div class="slot-info">
+                    <div class="slot-time" th:text="${#temporals.format(s.startTs, 'yyyy-MM-dd HH:mm')} + ' — ' + ${#temporals.format(s.endTs, 'HH:mm')}"></div>
+                    <div class="slot-meta">cap: <span th:text="${s.capacity}"></span></div>
+                </div>
+                <div th:if="${candidateId != null}">
+                    <form th:action="@{'/ui/student/book/' + ${s.id}}" method="post">
+                        <input type="hidden" name="candidateId" th:value="${candidateId}" />
+                        <button class="btn primary small" type="submit">Book</button>
+                    </form>
+                </div>
+                <div th:unless="${candidateId != null}">
+                    <a href="/ui/signup/student" class="btn outline small">Sign up to book</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <p style="margin-top:14px"><a href="/" class="btn-link">Go to public slots page</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div class="container auth-wrap">
+    <div class="auth-card">
+        <h1>Please sign in</h1>
+        <div class="form-field">
+            <label>Role</label>
+            <select id="role" name="role" class="full">
+                <option value="student">Student</option>
+                <option value="interviewer">Interviewer</option>
+            </select>
+        </div>
+        <div class="form-field">
+            <label>Id</label>
+            <input id="id" type="number" placeholder="user id" />
+        </div>
+        <div class="form-actions">
+            <button class="btn primary" id="signin">Sign in</button>
+            <a href="/" class="btn-link">Back</a>
+        </div>
+        <p class="muted">Enter the created user id after signup.</p>
+    </div>
+</div>
+
+<script>
+document.getElementById('signin').addEventListener('click', ()=>{
+    const role = document.getElementById('role').value;
+    const id = Number(document.getElementById('id').value);
+    if (!id) { alert('Enter numeric id'); return; }
+    // post to UI controller
+    const form = document.createElement('form');
+    form.method = 'POST'; form.action = '/ui/login';
+    const r = document.createElement('input'); r.type='hidden'; r.name='role'; r.value=role; form.appendChild(r);
+    const i = document.createElement('input'); i.type='hidden'; i.name='id'; i.value=id; form.appendChild(i);
+    document.body.appendChild(form); form.submit();
+});
+</script>
+</body>
+</html>
