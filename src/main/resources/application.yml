@@ -28,4 +28,3 @@ logging:
 app:
   slot:
     generation-days: 14
-
