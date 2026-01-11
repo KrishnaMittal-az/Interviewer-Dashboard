@@ -4,15 +4,22 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 # Set working directory
 WORKDIR /app
 
-# Copy pom.xml and download dependencies
+# Copy Maven wrapper and pom.xml
+COPY .mvn .mvn
+COPY mvnw .
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+
+# Make Maven wrapper executable
+RUN chmod +x mvnw
+
+# Download dependencies
+RUN ./mvnw dependency:go-offline -B || true
 
 # Copy source code
 COPY src ./src
 
-# Build the application
-RUN mvn clean package -DskipTests
+# Build the application (skip tests)
+RUN ./mvnw clean package -DskipTests
 
 # Use JRE for runtime
 FROM eclipse-temurin:17-jre-alpine
