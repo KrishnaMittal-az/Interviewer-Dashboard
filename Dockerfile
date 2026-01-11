@@ -22,7 +22,7 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # Use JRE for runtime
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 
 # Set working directory
 WORKDIR /app
@@ -30,8 +30,8 @@ WORKDIR /app
 # Copy JAR from build stage
 COPY --from=build /app/target/interview-scheduler-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose port
+# Expose port (Render will override with $PORT)
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-Dserver.port=${PORT:-8080}", "-jar", "app.jar"]
