@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-11T00:54:10+0530",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.9 (Microsoft)"
+    date = "2026-01-11T23:42:27+0530",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class CandidateMapperImpl implements CandidateMapper {
@@ -21,9 +21,9 @@ public class CandidateMapperImpl implements CandidateMapper {
 
         Candidate.CandidateBuilder candidate = Candidate.builder();
 
+        candidate.email( entity.getEmail() );
         candidate.id( entity.getId() );
         candidate.name( entity.getName() );
-        candidate.email( entity.getEmail() );
 
         return candidate.build();
     }
@@ -36,8 +36,8 @@ public class CandidateMapperImpl implements CandidateMapper {
 
         CandidateEntity candidateEntity = new CandidateEntity();
 
-        candidateEntity.setName( domain.getName() );
         candidateEntity.setEmail( domain.getEmail() );
+        candidateEntity.setName( domain.getName() );
 
         return candidateEntity;
     }

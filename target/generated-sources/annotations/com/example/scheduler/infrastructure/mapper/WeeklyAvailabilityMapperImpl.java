@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-11T00:54:10+0530",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.9 (Microsoft)"
+    date = "2026-01-11T23:42:27+0530",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class WeeklyAvailabilityMapperImpl implements WeeklyAvailabilityMapper {
@@ -23,11 +23,11 @@ public class WeeklyAvailabilityMapperImpl implements WeeklyAvailabilityMapper {
         WeeklyAvailability.WeeklyAvailabilityBuilder weeklyAvailability = WeeklyAvailability.builder();
 
         weeklyAvailability.interviewerId( entityInterviewerId( entity ) );
-        weeklyAvailability.id( entity.getId() );
         weeklyAvailability.dayOfWeek( entity.getDayOfWeek() );
-        weeklyAvailability.startTime( entity.getStartTime() );
         weeklyAvailability.endTime( entity.getEndTime() );
+        weeklyAvailability.id( entity.getId() );
         weeklyAvailability.slotDurationMinutes( entity.getSlotDurationMinutes() );
+        weeklyAvailability.startTime( entity.getStartTime() );
 
         return weeklyAvailability.build();
     }
@@ -41,9 +41,9 @@ public class WeeklyAvailabilityMapperImpl implements WeeklyAvailabilityMapper {
         WeeklyAvailabilityEntity weeklyAvailabilityEntity = new WeeklyAvailabilityEntity();
 
         weeklyAvailabilityEntity.setDayOfWeek( domain.getDayOfWeek() );
-        weeklyAvailabilityEntity.setStartTime( domain.getStartTime() );
         weeklyAvailabilityEntity.setEndTime( domain.getEndTime() );
         weeklyAvailabilityEntity.setSlotDurationMinutes( domain.getSlotDurationMinutes() );
+        weeklyAvailabilityEntity.setStartTime( domain.getStartTime() );
 
         return weeklyAvailabilityEntity;
     }

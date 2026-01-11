@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-11T00:54:10+0530",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.9 (Microsoft)"
+    date = "2026-01-11T23:42:27+0530",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class InterviewSlotMapperImpl implements InterviewSlotMapper {
@@ -23,10 +23,10 @@ public class InterviewSlotMapperImpl implements InterviewSlotMapper {
         InterviewSlot.InterviewSlotBuilder interviewSlot = InterviewSlot.builder();
 
         interviewSlot.interviewerId( entityInterviewerId( entity ) );
+        interviewSlot.capacity( entity.getCapacity() );
+        interviewSlot.endTs( entity.getEndTs() );
         interviewSlot.id( entity.getId() );
         interviewSlot.startTs( entity.getStartTs() );
-        interviewSlot.endTs( entity.getEndTs() );
-        interviewSlot.capacity( entity.getCapacity() );
         interviewSlot.status( entity.getStatus() );
         interviewSlot.version( entity.getVersion() );
 
@@ -41,9 +41,9 @@ public class InterviewSlotMapperImpl implements InterviewSlotMapper {
 
         InterviewSlotEntity interviewSlotEntity = new InterviewSlotEntity();
 
-        interviewSlotEntity.setStartTs( domain.getStartTs() );
-        interviewSlotEntity.setEndTs( domain.getEndTs() );
         interviewSlotEntity.setCapacity( domain.getCapacity() );
+        interviewSlotEntity.setEndTs( domain.getEndTs() );
+        interviewSlotEntity.setStartTs( domain.getStartTs() );
         interviewSlotEntity.setStatus( domain.getStatus() );
         interviewSlotEntity.setVersion( domain.getVersion() );
 

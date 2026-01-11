@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-11T00:54:10+0530",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.9 (Microsoft)"
+    date = "2026-01-11T23:42:27+0530",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class InterviewBookingMapperImpl implements InterviewBookingMapper {
@@ -25,9 +25,9 @@ public class InterviewBookingMapperImpl implements InterviewBookingMapper {
 
         interviewBooking.candidateId( entityCandidateId( entity ) );
         interviewBooking.slotId( entitySlotId( entity ) );
+        interviewBooking.bookedAt( entity.getBookedAt() );
         interviewBooking.id( entity.getId() );
         interviewBooking.status( entity.getStatus() );
-        interviewBooking.bookedAt( entity.getBookedAt() );
         interviewBooking.version( entity.getVersion() );
 
         return interviewBooking.build();
@@ -41,8 +41,8 @@ public class InterviewBookingMapperImpl implements InterviewBookingMapper {
 
         InterviewBookingEntity interviewBookingEntity = new InterviewBookingEntity();
 
-        interviewBookingEntity.setStatus( domain.getStatus() );
         interviewBookingEntity.setBookedAt( domain.getBookedAt() );
+        interviewBookingEntity.setStatus( domain.getStatus() );
         interviewBookingEntity.setVersion( domain.getVersion() );
 
         return interviewBookingEntity;
